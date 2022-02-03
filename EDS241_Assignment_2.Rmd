@@ -29,7 +29,7 @@ Finally, it may be useful to review the RegressionSpecification.pdf notes on Gau
 before doing the assignment.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
 ### Load Packages
@@ -82,8 +82,8 @@ median_pct_blk
 
 data_blk_med <- data %>% 
   mutate(abv_bel_med_blk = case_when(
-    PctBlack > median_pct_blk ~ "1",
-    PctBlack <= median_pct_blk ~ "0"))
+    PctBlack > median_pct_blk ~ 1,
+    PctBlack <= median_pct_blk ~ 0))
 
 data_blk_med_summary <- data_blk_med %>% 
   group_by(abv_bel_med_blk) %>% 
@@ -111,9 +111,10 @@ nox_nbp_model_table %>%
 ```
 
 \noindent - For the regression of `Dnox_masstons` on `NBP`, the estimated intercept is `r nox_nbp_model$coefficients[1]`. This means that when NBP is held constant at 0, meaning no counties were  regulated under the NOx Budget Program, the amount of change in annual NOx emissions from all power plants in a county between 2000 and 2008 was `r nox_nbp_model$coefficients[1]` tons. Since this number is negative, we can conclude that annual NOx emissions decreased by that amount when all else is held constant.
+
 \noindent - The estimated coefficient on NBP is `r nox_nbp_model$coefficients[2]`. This means that when counties were regulated under the NOx Budget Program, the amount of change in annual NOx emissions from all power plants in a county between 2000 and 2008 was `r nox_nbp_model$coefficients[2]` tons. Since this number is negative, we can conclude that annual NOx emissions decreased by that amount when counties were regulated but all else is held constant.
 
-```{r}
+```{r, include = FALSE, eval = FALSE}
 ggplot(data, aes(y = Dnox_masstons, x = NBP)) + 
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE)
@@ -136,13 +137,17 @@ nox_nbp_d_model_table %>%
   select(term, estimate, std.error, p.value, conf.low, conf.high) %>% 
   kable()
 ```
+**Question: does the variables being turned off mean that NO counties were regulated, or are we talking about 1 county hypothetically?**
 
-\noindent - 
-\noindent - 
-\noindent - 
-\noindent - 
+\noindent - The intercept is `r nox_nbp_d_model$coefficients[1]`, which represents the change in annual NOx emissions from all power plants in a county between 2000 and 2008 (in tons) when the county was not regulated under the NOx Budget Program and the county's PctBlack is below the sample median, meaning the fraction of the county population that is African American is below the sample median.
 
-```{r}
+\noindent - The estimated regression coefficient for NBP is `r nox_nbp_d_model$coefficients[2]`, which represents the change in annual NOx emissions from all power plants in a county between 2000 and 2008 (in tons) when the county is regulated under the NOx Budget Program and the county's PctBlack is below the sample median, meaning the fraction of the county population that is African American is below the sample median.
+
+\noindent - The estimated regression coefficient for D (which is represented by the variable `abv_bel_med_blk` in my code) is `r nox_nbp_d_model$coefficients[3]`, which represents the change in annual NOx emissions from all power plants in a county between 2000 and 2008 (in tons) when the county is not regulated under the NOx Budget Program and the county's PctBlack is above the sample median, meaning the fraction of the county population that is African American is above the sample median.
+
+\noindent - The estimated regression coefficient for the interaction between NBP and D (which is represented by the variable `abv_bel_med_blk` in my code) is `r nox_nbp_d_model$coefficients[4]`, which represents the difference in the change in annual NOx emissions from all power plants in a county between 2000 and 2008 (in tons) when the county is regulated under the NOx Budget Program and the county's PctBlack is above the sample median, meaning the fraction of the county population that is African American is above the sample median, compared to the change in annual NOx emissions from all power plants in a county between 2000 and 2008 (in tons) when the county is not regulated under the NOx Budget Program or the county's PctBlack is below the sample median, meaning the fraction of the county population that is African American is below the sample median.
+
+```{r, include = FALSE, eval = FALSE}
 ggplot(data_blk_med, aes(y = Dnox_masstons, x = NBP, color = abv_bel_med_blk)) + 
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE)
@@ -151,13 +156,13 @@ ggplot(data_blk_med, aes(y = Dnox_masstons, x = NBP, color = abv_bel_med_blk)) +
 ## (e) What is the predicted Dnox_masstons in a county that was not regulated under NBP and where PctBlack is above the sample median (i.e., where D=1)? Report the 95% confidence interval for this prediction. Make sure to use “heteroskedasticity-robust” standard errors.
 
 ```{r}
-not_reg_abv_blk <- data_blk_med %>% 
-  filter(NBP == 0,
-         abv_bel_med_blk == 1)
+not_reg_abv_blk <- data.frame(NBP = c(0), abv_bel_med_blk = c(1))
 
-
+CI <- predict(object = nox_nbp_d_model, newdata = not_reg_abv_blk, se.fit = TRUE, interval = "confidence")
+CI
 ```
-
+\noindent The predicted Dnox_masstons in a county that is not regulated under NBP and where PctBlack is above the sample median is -4.816 tons, which represents the change in annual NOx emissions from all power plants in a county between
+2000 and 2008 (in tons). The 95% confidence interval for this prediction is [-6.229991, -3.402009].
 
 
 
