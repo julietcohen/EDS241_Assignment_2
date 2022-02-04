@@ -133,7 +133,7 @@ all else is held constant.
 under the NOx Budget Program, the amount of change in annual
 NOx emissions from all power plants between 2000 and 2008
 was `r nox_nbp_model$coefficients[2]` tons. Since this number is
-negative, we can conclude that annual NOx emissions decreased by that
+negative, we can conclude that the NOx emissions decreased by that
 amount when counties were regulated but all else is held constant.
 
 ```{r, include = FALSE, eval = FALSE}
@@ -165,49 +165,40 @@ represents the average county's change in annual NOx emissions from all power pl
 under the NOx Budget Program and the county's `PctBlack` is below the
 sample median, meaning the fraction of the county population that is
 African American is below the sample median.
-- iintercept: change in emissions for countries that were not regulated and white
 
 \noindent - The estimated regression coefficient for NBP is
-`r nox_nbp_d_model$coefficients[2]`, which represents the change in
-annual NOx emissions from all power plants in a county between 2000 and
+`r nox_nbp_d_model$coefficients[2]`, which represents the average county's change in
+annual NOx emissions from all power plants between 2000 and
 2008 (in tons) when the county is regulated under the NOx Budget Program
 and the county's `PctBlack` is below the sample median, meaning the
 fraction of the county population that is African American is below the
 sample median.
-- subtract nox_nbp_d_model$coefficients[2] from the intercept 
 
 \noindent - The estimated regression coefficient for D (which is
 represented by the variable `abv_bel_med_blk` in my code) is
-`r nox_nbp_d_model$coefficients[3]`, which represents the change in
-annual NOx emissions from all power plants in a county between 2000 and
+`r nox_nbp_d_model$coefficients[3]`, which represents the average county's change in
+annual NOx emissions from all power plants between 2000 and
 2008 (in tons) when the county is not regulated under the NOx Budget
 Program and the county's `PctBlack` is above the sample median, meaning
 the fraction of the county population that is African American is above
 the sample median.
--subtract nox_nbp_d_model$coefficients[3] from intercept
 
 \noindent - The estimated regression coefficient for the interaction
-between NBP and D (which is represented by the variable
-`abv_bel_med_blk` in my code) is `r nox_nbp_d_model$coefficients[4]`,
-which represents the difference in the average change in annual NOx emissions
-from all power plants counties between 2000 and 2008 (in tons) when
-counties are regulated under the NOx Budget Program and the countys' and
+between NBP and D is `r nox_nbp_d_model$coefficients[4]`,
+which represents the difference in the average county's change in annual NOx emissions
+from all power plants between 2000 and 2008 (in tons) when
+counties are regulated under the NOx Budget Program and the
 `PctBlack` is above the sample median, meaning the fraction of the county
 population that is African American is above the sample median, compared
-to the change in annual NOx emissions from all power plants in a county
-between 2000 and 2008 (in tons) when there are regulations under
-the NOx Budget Program or the county's `PctBlack` is below the sample
+to the average county's change in annual NOx emissions from all power plants between 2000 and 2008 (in tons) when there are regulations under
+the NOx Budget Program and the county's `PctBlack` is below the sample
 median, meaning the fraction of the county population that is African
-American is below the sample median. This interaction term is the difference in the effect of regulation between black and white counties. We are asking if the regulations bring the same benefits to counties with mostly white and mostly black counties, from an environemntal justice perspective. Because this interaction term is not 0, we know there is a difference for predominantly black and white communities, and because this interaction term is positive, we know that predominantly black communities are not getting as much benefit from these regualtions compared to white communities. Emissions are improving for both predominantly white and predominantly black counties, but not as much for predominantly black counties.
+American is below the sample median. This interaction term is the difference in the effect of regulation between predominantly black and predominantly white counties. We are investigating if the regulations bring the same benefits the these two categories of counties from an environmental justice perspective. Because this interaction term is not 0, we know there is indeed a difference for predominantly black and white communities, and because this interaction term is positive, we know that predominantly black communities are not getting as much benefit from these regulations compared to white communities. Emissions are improving for both predominantly white and predominantly black counties, but not as much for predominantly black counties.
 
-- the sign is pos for the interaction term, but the sign is negative for the nbp term, so the CHANGE in the imapct of nbp regulations is less for counties that are black, the effect of 1 & 1 minus 1 & 0, all minus 0 & 1 and minus 0 & 0 
-- diff in effect of regulation between black and white counties, testing for environmental justice implications of air auqility regualtions, are theey brining same benefits to both white and black counties
-
-- regression specification slides - each beta meaning
-- 2 binary indicators
-- with 2 0/1 variables, there are 4 possible outcomes
 
 ```{r, include = FALSE, eval = FALSE}
+# See the regression specification slides for an example of each beta's meaning.
+
 ggplot(data_blk_med, aes(y = Dnox_masstons, x = NBP, color = abv_bel_med_blk)) + 
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE)
@@ -223,7 +214,8 @@ CI
 ```
 
 \noindent The predicted Dnox_masstons in a county that is not regulated
-under NBP and where `PctBlack` is above the sample median is -4.816 tons,
+under NBP and where `PctBlack` is above the sample median is -5.006106 tons,
 which represents the change in annual NOx emissions from all power
 plants in a county between 2000 and 2008 (in tons). The 95% confidence
 interval for this prediction is [-6.440065, -3.572147].
+
